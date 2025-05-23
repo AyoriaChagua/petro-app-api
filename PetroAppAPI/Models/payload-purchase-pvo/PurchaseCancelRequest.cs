@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ApiTestIIS.Models
 {
-
-    public class Cliente
+    public class PurchaseCancelRequest
     {
-        [Key]
-        public string id_cliente { get; set; }
-        public string descripcion { get; set; }
-        public string Nro_di { get; set; }
         public string Cia { get; set; }
-        public string Id_estado { get; set; }
+        public string Nro_scop { get; set; }
+        public string Usuario_anula { get; set; }
     }
 }

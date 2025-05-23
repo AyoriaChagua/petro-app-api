@@ -21,20 +21,53 @@ namespace ApiTestIIS.Controllers
             _context = contexto;
         }
 
-        // RECUPERA LOS PUNTOS DE VENTA
         [HttpGet("{sCliente}")]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<Punto_Venta>>> Get(string sCliente)
+        public async Task<ActionResult<IEnumerable<Punto_Venta>>> GetByClient(string sCliente)
         {
             var obj = await (from c in _context.Punto_Venta
                             where c.Cia == "06" && c.Id_estado == "01" && c.Id_cliente == sCliente
-                            select new Punto_Venta { Id_punto_venta=c.Id_punto_venta, 
+                            select new Punto_Venta { 
+                                Id_punto_venta=c.Id_punto_venta, 
                                 Descripcion= c.Descripcion.Substring( c.Descripcion.IndexOf("S.A.C") == -1 ? c.Descripcion.Length : c.Descripcion.IndexOf("S.A.C")+5 ).Trim() +" - "+c.Descripcion, 
-                                Cia=c.Cia, Id_cliente=c.Id_cliente, Id_estado=c.Id_cliente })
+                                Cia=c.Cia, 
+                                Id_cliente=c.Id_cliente, 
+                                Id_estado=c.Id_cliente
+                            })
                         .ToListAsync();
-            //var obj = await _context.Punto_Venta.Where(c => c.Cia == "06" && c.Id_estado == "01" && c.Id_cliente == sCliente).ToListAsync();
-
             return Ok(obj);
         }
+
+        [HttpGet("search/{searchString}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Punto_Venta>>> GetSearch(string searchString)
+        {
+            var obj = await (from c in _context.Punto_Venta
+                             where c.Cia == "06" && c.Id_estado == "01"
+                             select new
+                             {
+                                 PuntoVenta = c,
+                                 DescripcionModificada = c.Descripcion.Substring(c.Descripcion.IndexOf("S.A.C") == -1 ? c.Descripcion.Length : c.Descripcion.IndexOf("S.A.C") + 5).Trim() + " - " + c.Descripcion
+                             })
+                             .ToListAsync();
+
+            var result = obj
+                .Where(c => c.PuntoVenta.Id_cliente == searchString || c.PuntoVenta.Direccion.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0)
+                .Select(c => new Punto_Venta
+                {
+                    Id_punto_venta = c.PuntoVenta.Id_punto_venta,
+                    Descripcion = c.DescripcionModificada,
+                    Cia = c.PuntoVenta.Cia,
+                    Id_cliente = c.PuntoVenta.Id_cliente,
+                    Id_estado = c.PuntoVenta.Id_cliente,
+                    Direccion = c.PuntoVenta.Direccion
+                })
+                .Take(15)
+                .ToList();
+
+            return Ok(result);
+        }
+
+
     }
 }

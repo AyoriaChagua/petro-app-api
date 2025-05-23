@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace ApiTestIIS.Models
 {
-    public class Punto_Venta
+    public class Chofer
     {
         [Key]
-        public string Id_punto_venta { get; set; }
+        public string Id_Chofer { get; set; }
         public string Descripcion { get; set; }
         public string Cia { get; set; }
-        public string Direccion { get; set; }
-        public string Id_cliente { get; set; }
         public string Id_estado { get; set; }
-
     }
 }

@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ApiTestIIS.Models
 {
-    public class Punto_Venta
+    public class Vehiculo
     {
-        [Key]
-        public string Id_punto_venta { get; set; }
-        public string Descripcion { get; set; }
+        public string Placa_tractor { get; set; }
+        public string Placa_cisterna { get; set; }
         public string Cia { get; set; }
-        public string Direccion { get; set; }
-        public string Id_cliente { get; set; }
         public string Id_estado { get; set; }
-
     }
 }

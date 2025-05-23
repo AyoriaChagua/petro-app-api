@@ -35,8 +35,32 @@ namespace ApiTestIIS.Controllers
                             Direction = System.Data.ParameterDirection.Input,
                             Value = sCliente
                         }};
-            string StoredProc = "exec sp_m_articulo @Cliente";
+            string StoredProc = "exec sp_m_articulo_2 @Cliente";
             return await _context.articulo.FromSqlRaw(StoredProc, param).ToListAsync();
+        }
+
+        [HttpGet("{idPlanta}/{idListaPrecio}")]
+       // [Authorize]
+        public async Task<ActionResult<IEnumerable<ArticuloPrecio>>> GetArticuloPrecio(string idPlanta, string idListaPrecio)
+        {
+            var param = new SqlParameter[] {
+                new SqlParameter() {
+                    ParameterName = "@id_planta",
+                    SqlDbType =  System.Data.SqlDbType.VarChar,
+                    Size = 6,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = idPlanta
+                },
+                new SqlParameter() {
+                    ParameterName = "@id_lista_precio",
+                    SqlDbType =  System.Data.SqlDbType.VarChar,
+                    Size = 5,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = idListaPrecio
+                }
+            };
+            string StoredProc = "exec ObtenerPrecioArticulosAlmacen @id_planta, @id_lista_precio";
+            return await _context.articuloPrecio.FromSqlRaw(StoredProc, param).ToListAsync();
         }
     }
 }

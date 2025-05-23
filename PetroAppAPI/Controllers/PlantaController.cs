@@ -21,9 +21,7 @@ namespace ApiTestIIS.Controllers
             _context = contexto;
         }
 
-        // RECUPERA LAS PLANTAS
         [HttpGet]
-        //[Authorize]
         public async Task<ActionResult<IEnumerable<Planta>>> GetPlanta()
         {
             var obj = await _context.Planta.Where(c => c.Cia == "06" && c.Id_estado == "01").ToListAsync();

@@ -33,6 +33,46 @@ namespace ApiTestIIS.Contexts
 
             modelBuilder.Entity<Punto_venta_asesor>()
                 .HasKey(c => new { c.Cia, c.Id_cliente, c.Id_punto_venta, c.Id_asesor });
+
+            modelBuilder.Entity<Vehiculo>()
+                .HasKey(v => new { v.Cia ,v.Placa_tractor, v.Placa_cisterna});
+
+            modelBuilder.Entity<Vehiculo_Compartimiento>()
+                .HasKey(v => new { v.Cia, v.Placa_tractor, v.Placa_cisterna, v.Nro_Compartimiento });
+
+            modelBuilder.Entity<PurchaseRequest>()
+                .HasKey(v => new { v.Cia, v.Nro_scop });
+
+            modelBuilder.Entity<PurchaseDetailRequest>()
+                .HasKey(v => new { v.Cia, v.Nro_scop, v.Id_articulo });
+
+            modelBuilder.Entity<PurchaseDetailCompartmentRequest>()
+                .HasKey(v => new { v.Cia, v.Nro_scop, v.Id_articulo, v.Placa_tractor, v.Placa_cisterna, v.Nro_compartimiento });
+
+            modelBuilder.Entity<PurchaseDetResponse>()
+                .HasKey(v => new { v.Descripcion_corta, v.Nro_scop });
+
+            modelBuilder.Entity<PurchaseDetailCompartmentResponse>()
+               .HasKey(v => new { v.Nro_compartimiento, v.Nro_scop });
+            modelBuilder.Entity<PurchaseSearchResponse>().HasNoKey();
+            modelBuilder.Entity<PurchaseSearch>()
+               .HasKey(p => p.Nro_scop);
+
+            modelBuilder.Entity<PurchaseDetSearch>()
+                .HasKey(d => new { d.Nro_scop, d.Id_articulo });
+            modelBuilder.Entity<PurchaseDetSearch>()
+               .HasOne(p => p.PurchaseSearch)
+               .WithMany(b => b.Detalle)
+               .HasForeignKey(p => p.Nro_scop)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PurchaseDetEditResponse>()
+                .HasKey(v => new { v.Id_articulo, v.Nro_scop });
+
+            modelBuilder.Entity<PurchaseDetCompartmentEditResponse>()
+               .HasKey(v => new { v.Placa_cisterna, v.Nro_scop, v.Id_articulo, v.Placa_tractor, v.Nro_compartimiento  });
+
+            base.OnModelCreating(modelBuilder);
         }
         public DbSet<Margen> margen { get; set; }
         public DbSet<Solicitud_dscto_det_sel> solicitud_dscto_det_sel { get; set; }
@@ -48,6 +88,7 @@ namespace ApiTestIIS.Contexts
         public DbSet<CondiPago> CondiPago { get; set; }
         public DbSet<ArticuloSubclase> ArticuloSubclase { get; set; }
         public DbSet<Articulo> articulo { get; set; }
+        public DbSet<ArticuloPrecio> articuloPrecio { get; set; }
         public DbSet<Usuario_aprueba_dscto> usuario_aprueba_dscto { get; set; }
         public DbSet<Almacen> almacen { get; set; }
         public DbSet<Solicitud_dscto_sel> solicitud_Dscto_Sel { get; set; }
@@ -68,6 +109,24 @@ namespace ApiTestIIS.Contexts
         public DbSet<Lista_Precio> lista_Precios  { get; set; }
         public DbSet<Simulacion_Venta> simulacion_ventas { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Vehiculo> vehiculo { get; set; }
+        public DbSet<Chofer> chofer { get; set; }
+        public DbSet<PurchaseRequest> purchaseRegister { get; set; }
+        public DbSet<PurchaseDetailRequest> purchaseDetRegister { get; set; }
+        public DbSet<PurchaseDetailCompartmentRequest> purchaseDetCompartmentRegister { get; set; }
+        public DbSet<PurchaseDiscountResponse> purchaseDiscountResponse { get; set; }
+        public DbSet<PurchaseResponse> purchaseResponse { get; set; }
+        public DbSet<PurchaseDetResponse> purchaseDetResponse { get; set; }
+        public DbSet<PurchaseDetailCompartmentResponse> purchaseDetCompartimentResponse { get; set; }
+        public DbSet<MontoBaseDesc> montoBaseDescs { get; set; }
+        public DbSet<PurchaseSearchResponse> purchaseSearchResponse { get; set; }
+        public DbSet<PurchaseSearch> purchaseSearch { get; set; }
+        public DbSet<PurchaseDetSearch> purchaseDetSearch { get; set; }
+
+        public DbSet<PurchaseEditResponse> purchaseEditResponse { get; set; }
+        public DbSet<PurchaseDetEditResponse> purchaseDetEditResponse { get; set; }
+        public DbSet<PurchaseDetCompartmentEditResponse> purchaseDetCompartmentEditResponse { get; set; }
+        public DbSet<PurchaseEditRequest> purchaseEditRequest { get; set; }
 
     }
 }

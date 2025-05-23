@@ -12,5 +12,6 @@ namespace ApiTestIIS.Models
         public string Id_articulo { get; set; }
         public string Descripcion_corta { get; set; }
         public string Id_articulo_subclase { get; set; }
+        public string Id_articulo_grupo { get; set; }
     }
 }

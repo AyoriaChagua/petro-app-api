@@ -46,5 +46,40 @@ namespace ApiTestIIS.Controllers
             string StoredProc = "exec sp_m_Lista_Precios @Planta, @Almacen";
             return await _context.lista_Precios.FromSqlRaw(StoredProc, param).ToListAsync();
         }
+
+
+        [HttpGet("monto-base/{sPlanta}/{sArticulo}")]
+        [Authorize]
+        public async Task<ActionResult<MontoBaseDesc>> GetDescuentoMontoBase(string sPlanta, string sArticulo)
+        {
+            var param = new SqlParameter[] {
+                new SqlParameter() {
+                    ParameterName = "@PLANTA",
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                    Size = 3,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = sPlanta
+                },
+                new SqlParameter() {
+                    ParameterName = "@ID_ARTICULO",
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                    Size = 5,
+                    Direction = System.Data.ParameterDirection.Input,
+                    Value = sArticulo
+                }
+            };
+            string StoredProc = "exec  [dbo].[sp_m_obtener_monto_base_lp] @PLANTA, @ID_ARTICULO";
+
+            var resultList = await _context.montoBaseDescs.FromSqlRaw(StoredProc, param).ToListAsync();
+
+            var result = resultList.FirstOrDefault();
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
     }
 }

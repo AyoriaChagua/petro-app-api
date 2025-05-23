@@ -21,54 +21,36 @@ namespace ApiTestIIS.Controllers
         {
             _context = contexto;
         }
-        
-        // TRAE LOS CLIENTES     A = actuales
-        [HttpGet("{idLike}")]
-        //[Authorize] 
-        public async Task<ActionResult<IEnumerable<Cliente>>> Get(string idLike)
-        {
-            var param = new SqlParameter[] {
-                        new SqlParameter() {
-                            ParameterName = "@idLike",
-                            SqlDbType =  System.Data.SqlDbType.VarChar,
-                            Size = 1,
-                            Direction = System.Data.ParameterDirection.Input,
-                            Value = idLike
-                        }};
-            string StoredProc = "exec sp_m_cliente @idLike";
-            return await _context.Cliente.FromSqlRaw(StoredProc, param).ToListAsync();
-        }
 
-        
-        // client with debt: Line and seller
-        [HttpGet("Line/{sCliente}")]
-        //[Authorize] 
-        public async Task<ActionResult<IEnumerable<G_Client_for_Debt>>> Get_Line(string sCliente)
+        [HttpGet("search/{sCliente}")]
+        [Authorize] 
+        public async Task<ActionResult<IEnumerable<G_Client_for_Debt>>> Get_Search(string sCliente)
         {
             try
             {
-                var Obj = await ( from c in _context.Cliente 
-                                  join pv in _context.Punto_Venta_Asesor on new { c.Cia, Id_cliente=c.id_cliente } equals new { pv.Cia, pv.Id_cliente }
-                                  join a in _context.Asesor on new {c.Cia, pv.Id_asesor } equals new { a.Cia, Id_asesor=a.Id_Asesor }
-                                  where c.Cia== "06" && c.id_cliente== sCliente && c.Id_estado== "01" && pv.Id_estado== "01" && a.Id_estado== "01"
-                                  select new G_Client_for_Debt 
-                                  {
-                                      Limite_credito= c.Limite_credito,
-                                      Saldo= c.Saldo,
-                                      Asesor= a.Nombre,
-                                      Asesor_cell= a.Cellphone,
-                                      Asesor_email= a.E_mail
-                                  }).Distinct()
-                                  .ToListAsync();
-                return Ok(Obj);
+                var sql = @"
+                        SELECT TOP 10  id_cliente, descripcion, Id_estado, Nro_di, Cia
+                        FROM Cliente WITH (NOLOCK)
+                        WHERE Cia = '06' 
+                          AND Id_estado = '01'
+                          AND (id_cliente LIKE @buscar OR descripcion LIKE @buscar OR Nro_di LIKE @buscar)
+                    ";
+                var parametro = new SqlParameter("@buscar", $"%{sCliente}%");
+                var obj = await _context.Cliente
+                    .FromSqlRaw(sql, parametro)
+                    .ToListAsync();
+
+                /*var Obj = await _context.Set<Cliente>()
+                    .Where(c => c.Cia == "06" && c.Id_estado == "01" && (c.id_cliente.Contains(sCliente) || c.descripcion.Contains(sCliente) || c.Nro_di.Contains(sCliente)))
+                    .Take(10)
+                    .ToListAsync();*/
+
+                return Ok(obj);
             }
             catch (Exception ex)
             {
-                //    Log the exception for further investigation
-                //Console.WriteLine($"An error occurred: {ex.Message}");
                 return StatusCode(500, $"Un error occurrio mientras se procesaba tu request: {ex.Message}");
-            } 
+            }
         }
-        
     }   
 }
